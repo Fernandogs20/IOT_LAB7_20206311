@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lab06_20206311</string>
+
+    <!-- TU APP ID (CORRECTO) -->
+    <string name="facebook_app_id">1362825172202250</string>
+
+    <!-- TU CLIENT TOKEN (OBLIGATORIO) -->
+    <string name="facebook_client_token">6741b2b53f86099be11603c9ed533373</string>
+
+    <!-- ESQUEMA PARA REDIRECT -->
+    <string name="fb_login_protocol_scheme">fb1362825172202250</string>
+</resources>
