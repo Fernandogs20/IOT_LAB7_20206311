@@ -9,13 +9,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.example.lab06_20206311.R;
+import com.example.lab06_20206311.services.AuthService;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private FirebaseAuth mAuth;
-    private EditText etEmail, etPassword, etConfirmPassword;
+    private AuthService authService;
+    private EditText etNombre, etDni, etEmail, etPassword, etConfirmPassword;
     private Button btnRegister;
     private TextView tvBackToLogin;
 
@@ -24,8 +24,12 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        mAuth = FirebaseAuth.getInstance();
+        // Inicializar AuthService
+        authService = new AuthService(this);
 
+        // Inicializar vistas
+        etNombre = findViewById(R.id.etNombre);
+        etDni = findViewById(R.id.etDni);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
@@ -37,16 +41,29 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void registerUser() {
+        String nombre = etNombre.getText().toString().trim();
+        String dni = etDni.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
         String confirmPassword = etConfirmPassword.getText().toString().trim();
 
-        if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            Toast.makeText(this, "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
+        // Validaciones
+        if (nombre.isEmpty()) {
+            Toast.makeText(this, "El nombre es obligatorio", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (password.length() < 6) {
+        if (dni.isEmpty() || dni.length() < 8) {
+            Toast.makeText(this, "Ingresa un DNI válido", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (email.isEmpty()) {
+            Toast.makeText(this, "El correo es obligatorio", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (password.isEmpty() || password.length() < 6) {
             Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -56,15 +73,25 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(RegisterActivity.this, "Registro exitoso", Toast.LENGTH_SHORT).show();
-                        goToMainActivity();
-                    } else {
-                        Toast.makeText(RegisterActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
+        // Deshabilitar botón mientras se procesa
+        btnRegister.setEnabled(false);
+        btnRegister.setText("Registrando...");
+
+        // Usar AuthService para registrar
+        authService.registerUser(nombre, email, password, dni, new AuthService.AuthCallback() {
+            @Override
+            public void onSuccess(String message) {
+                Toast.makeText(RegisterActivity.this, "Registro exitoso", Toast.LENGTH_SHORT).show();
+                goToMainActivity();
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(RegisterActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
+                btnRegister.setEnabled(true);
+                btnRegister.setText("Registrarse");
+            }
+        });
     }
 
     private void goToMainActivity() {

@@ -47,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
                         selectedFragment = new TareasFragment();
                     } else if (itemId == R.id.nav_resumen) {
                         selectedFragment = new ResumenFragment();
+                    } else if (itemId == R.id.nav_perfil) {
+                        // Lanzar Activity de Perfil
+                        startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+                        return true;
                     } else if (itemId == R.id.nav_cerrar_sesion) {
                         showLogoutDialog();
                         return true;

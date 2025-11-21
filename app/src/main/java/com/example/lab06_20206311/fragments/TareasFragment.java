@@ -1,6 +1,7 @@
 package com.example.lab06_20206311.fragments;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,7 +70,10 @@ public class TareasFragment extends Fragment {
     private void loadTareas() {
         tareasRef.addSnapshotListener((snapshots, e) -> {
             if (e != null) {
-                Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Context ctx = getContext();
+                if (ctx != null) {
+                    Toast.makeText(ctx, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 return;
             }
 
@@ -126,7 +130,10 @@ public class TareasFragment extends Fragment {
                 .setPositiveButton("Guardar", (dialog, which) -> {
                     String titulo = etTitulo.getText().toString().trim();
                     if (titulo.isEmpty()) {
-                        Toast.makeText(getContext(), "El título es obligatorio", Toast.LENGTH_SHORT).show();
+                        Context ctx = getContext();
+                        if (ctx != null) {
+                            Toast.makeText(ctx, "El título es obligatorio", Toast.LENGTH_SHORT).show();
+                        }
                         return;
                     }
 
@@ -141,10 +148,20 @@ public class TareasFragment extends Fragment {
                     if (isEdit) {
                         nuevaTarea.setId(tarea.getId());
                         tareasRef.document(tarea.getId()).set(nuevaTarea)
-                                .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "Tarea actualizada", Toast.LENGTH_SHORT).show());
+                                .addOnSuccessListener(aVoid -> {
+                                    Context ctx = getContext();
+                                    if (ctx != null) {
+                                        Toast.makeText(ctx, "Tarea actualizada", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     } else {
                         tareasRef.add(nuevaTarea)
-                                .addOnSuccessListener(docRef -> Toast.makeText(getContext(), "Tarea agregada", Toast.LENGTH_SHORT).show());
+                                .addOnSuccessListener(docRef -> {
+                                    Context ctx = getContext();
+                                    if (ctx != null) {
+                                        Toast.makeText(ctx, "Tarea agregada", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     }
                 })
                 .setNegativeButton("Cancelar", null)
@@ -161,7 +178,12 @@ public class TareasFragment extends Fragment {
                 .setMessage("¿Eliminar esta tarea?")
                 .setPositiveButton("Sí", (dialog, which) -> {
                     tareasRef.document(tarea.getId()).delete()
-                            .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "Tarea eliminada", Toast.LENGTH_SHORT).show());
+                            .addOnSuccessListener(aVoid -> {
+                                Context ctx = getContext();
+                                if (ctx != null) {
+                                    Toast.makeText(ctx, "Tarea eliminada", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                 })
                 .setNegativeButton("No", null)
                 .show();
